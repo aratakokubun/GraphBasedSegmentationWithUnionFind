@@ -1,0 +1,9 @@
+*.pdf
+*.jps
+*.png
+images
+ref
+result
+*.txt
+*.pyc
+__pycahe__
