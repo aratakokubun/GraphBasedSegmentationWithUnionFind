@@ -4,7 +4,8 @@ from abc import ABCMeta, abstractmethod
 from PIL import Image
 import numpy as np
 
-from GraphBasedSegment import *
+#from GraphBasedSegment import *
+import GraphBasedSegment as gbs
 from Edge import *
 from CreateResultImage import *
 
@@ -25,7 +26,8 @@ class SegmentationProcess:
     self.img = src_img
     self.dst_img = dst_img
     self.top_n = top_n
-    self.tau_k = tau_k
+    # Change gbs tau parameter.
+    gbs.tau_k = tau_k
     # Dictionary accomodates id:Component set
     self.component_dict = dict()
     # Dictionary accomodates EdgeIdSet:Edge set
@@ -104,7 +106,6 @@ class SegmentationProcess:
     # Initialize uf graph based segment with the size of image.
     size = self.img.shape[0]*self.img.shape[1]
     union_find = UnionFind(size, self.root_dict)
-    ufgbs = GraphBasedSegment(uf=union_find, tau_k=self.tau_k)
 
     # Sort edge by ascending order of the difference of it.
     sorted_edge = sorted(self.edge_dict.items(), key=lambda item:item[1].get_difference())
@@ -115,10 +116,48 @@ class SegmentationProcess:
       edge = edge_item[1]
       edge_value = edge.get_difference()
       # Merge edge
-      ufgbs.merge(id1=id_set.get_id1(), id2=id_set.get_id2(), edge_value=edge_value)
+      gbs.merge(id1=id_set.get_id1(), id2=id_set.get_id2(), edge_value=edge_value, uf=union_find)
 
     # Create result image colored with top n area.
     create_colored_result(self.img, union_find, self.top_n, self.dst_img)
+
+
+'''
+Single pixel component with pixel, rgba and value
+'''
+class Component:
+
+  '''
+  Constructer for the pixel object
+  @param row : row coordinate of the pixel
+  @param col : col coordinate of the pixel
+  @param img : numpy array of image
+  '''
+  def __init__(self, row, col, img):
+    self.elem = (row, col)
+    self.rgba = img[row][col]
+    self.value = calc_luminance(self.rgba)
+
+  '''
+  Get pixel row, col element.
+  @return (int, int) : row, col
+  '''
+  def get_elem(self):
+    return self.elem
+
+  '''
+  Get pixel color value.
+  @return (int, ...) : r or rgb or rgba color
+  '''
+  def get_rgba(self):
+    return self.rgba
+
+  '''
+  Get value of the pixel. (for example, luminance)
+  @return value of the pixel
+  '''
+  def get_value(self):
+    return self.value
 
 
 '''

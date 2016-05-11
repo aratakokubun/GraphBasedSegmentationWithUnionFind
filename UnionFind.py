@@ -99,3 +99,53 @@ class UnionFind:
   '''
   def get_all_union(self):
     return self.table
+
+'''
+Root node of Union Find Tree which cotains below.
+1. Rank of the tree (depth of the tree)
+2. Minimum edge value in merged edges.
+'''
+class Root:
+
+  '''
+  Initialize with deafult values.
+  @param rank : rank of the tree
+  @param min_dif : minimum edge contained in the tree (merged)
+  @param size : size of the tree
+  '''
+  def __init__(self, rank, min_dif, size):
+    self.rank = rank
+    self.min_dif = min_dif
+    self.size = size
+
+  '''
+  Get rank value.
+  @return int : rank
+  '''
+  def get_rank(self):
+    return self.rank
+
+  '''
+  Get minimum difference value.
+  @return int : minimum difference value
+  '''
+  def get_min_dif(self):
+    return self.min_dif
+
+  '''
+  Get tree size.
+  @return int : tree size
+  '''
+  def get_size(self):
+    return self.size
+
+  '''
+  Update root node.
+  @param dif_rank : difference between old rank and new rank
+  @param new_min_dif  : new minimum dif value
+  @param dif_size : difference bewteen old size and new size
+  '''
+  def update(self, dif_rank, new_min_dif, dif_size):
+    self.rank += dif_rank
+    self.min_dif = new_min_dif
+    self.size += dif_size
